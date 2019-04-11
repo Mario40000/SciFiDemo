@@ -6,21 +6,97 @@ public class Player : MonoBehaviour
 {
     //Variables
     private CharacterController _controller;
+    private int currentAmmo;
+    private bool reloading = false;
+    private UIManager uiManager;
+    [SerializeField]
+    private bool coin = false;
 
     public float playerSpeed = 0.0f;
     public float gravity = 0.0f;
-
+    public GameObject muzzleFlash;
+    public GameObject hitMarker;
+    public GameObject rifleSound;
+    public int maxAmmo = 0;
+    public float reloadDelay = 0.0f;
+    public GameObject coinSound;
+   
 	// Use this for initialization
 	void Start ()
     {
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _controller = GetComponent<CharacterController>();
-	}
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        muzzleFlash.SetActive(false);
+        currentAmmo = maxAmmo;
+        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        
-	}
+        //Volvemos el cursor visible
+        if (Input.GetButtonDown("Cancel"))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        //Lanzamos un raycast desde el centro de la pantalla
+        if(Input.GetButton("Fire1") && currentAmmo > 0)
+        {
+            Shoot(); 
+        }
+        else
+        {
+            //Muzzle COntroller
+            muzzleFlash.SetActive(false);
+            rifleSound.GetComponent<AudioSource>().Stop();
+        }
+
+        //Recargamos el arma
+        if (Input.GetButtonDown("Fire2") && reloading == false)
+        {
+            StartCoroutine(Reload());
+        }
+
+    }
+
+    public void CoinPick()
+    {
+        coinSound.GetComponent<AudioSource>().Play();
+        coin = true;
+    }
+
+    IEnumerator Reload ()
+    {
+        reloading = true;
+        yield return new WaitForSeconds(reloadDelay);
+        currentAmmo = maxAmmo;
+        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+        reloading = false;
+    }
+
+    private void Shoot ()
+    {
+        muzzleFlash.SetActive(true);
+        if (rifleSound.GetComponent<AudioSource>().isPlaying == false)
+        {
+            rifleSound.GetComponent<AudioSource>().Play();
+        }
+        Ray rayOrigin = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        //Guardamos la info de a lo que le pegamos
+        RaycastHit hitInfo;
+        if (Physics.Raycast(rayOrigin, out hitInfo))
+        {
+            //Miramos si pega con algo
+            Debug.Log("RayCast hit" + hitInfo.transform.name);
+            Instantiate(hitMarker, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
+        }
+        currentAmmo--;
+        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+    }
 
     private void FixedUpdate()
     {
