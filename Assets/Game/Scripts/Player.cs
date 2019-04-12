@@ -9,9 +9,8 @@ public class Player : MonoBehaviour
     private int currentAmmo;
     private bool reloading = false;
     private UIManager uiManager;
-    [SerializeField]
-    private bool coin = false;
 
+    public bool coin = false;
     public float playerSpeed = 0.0f;
     public float gravity = 0.0f;
     public GameObject muzzleFlash;
@@ -20,10 +19,13 @@ public class Player : MonoBehaviour
     public int maxAmmo = 0;
     public float reloadDelay = 0.0f;
     public GameObject coinSound;
+    public GameObject gun;
+    public bool hasGun = false;
    
 	// Use this for initialization
 	void Start ()
     {
+        gun.SetActive(false);
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _controller = GetComponent<CharacterController>();
         Cursor.visible = false;
@@ -46,7 +48,10 @@ public class Player : MonoBehaviour
         //Lanzamos un raycast desde el centro de la pantalla
         if(Input.GetButton("Fire1") && currentAmmo > 0)
         {
-            Shoot(); 
+            if(hasGun == true)
+            {
+                Shoot();
+            }
         }
         else
         {

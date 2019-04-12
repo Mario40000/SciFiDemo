@@ -23,8 +23,6 @@ public class Coin : MonoBehaviour
         Debug.Log("Collision");
         if (other.tag == "Player")
         {
-            //player.CoinPick();
-            //Destroy(gameObject);
             playerIn = true;
             uiManager.pickText.text = "Press Space to pick coin";
             if (playerIn)
@@ -33,6 +31,7 @@ public class Coin : MonoBehaviour
                 {
                     player.CoinPick();
                     uiManager.pickText.text = "";
+                    uiManager.coinImage.SetActive(true);
                     Destroy(gameObject);
                 }
             }
