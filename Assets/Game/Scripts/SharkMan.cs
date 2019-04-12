@@ -38,6 +38,7 @@ public class SharkMan : MonoBehaviour
                     player.hasGun = true;
                     uiManager.coinImage.SetActive(false);
                     player.gun.SetActive(true);
+                    uiManager.UpdateAmmo(player.currentAmmo, player.maxAmmo);
                 }
             }
             else

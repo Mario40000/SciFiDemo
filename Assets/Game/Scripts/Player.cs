@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     //Variables
     private CharacterController _controller;
-    private int currentAmmo;
+    public int currentAmmo;
     private bool reloading = false;
     private UIManager uiManager;
 
@@ -32,7 +32,8 @@ public class Player : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         muzzleFlash.SetActive(false);
         currentAmmo = maxAmmo;
-        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+        //uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+        
     }
 	
 	// Update is called once per frame
@@ -63,7 +64,11 @@ public class Player : MonoBehaviour
         //Recargamos el arma
         if (Input.GetButtonDown("Fire2") && reloading == false)
         {
-            StartCoroutine(Reload());
+            if(hasGun)
+            {
+                StartCoroutine(Reload());
+            }
+            
         }
 
     }
@@ -98,6 +103,13 @@ public class Player : MonoBehaviour
             //Miramos si pega con algo
             Debug.Log("RayCast hit" + hitInfo.transform.name);
             Instantiate(hitMarker, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
+
+            //Miramos si damos contra una caja y si es así ejecutamos el metodo del script de la caja
+            Destructible crate = hitInfo.transform.GetComponent<Destructible>();
+            if(crate != null)
+            {
+                crate.CrateDestroy();
+            }
         }
         currentAmmo--;
         uiManager.UpdateAmmo(currentAmmo, maxAmmo);

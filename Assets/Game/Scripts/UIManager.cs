@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         pickText.text = "";
+        ammoText.text = "";
         coinImage.SetActive(false);
     }
 
